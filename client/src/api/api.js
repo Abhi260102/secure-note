@@ -43,7 +43,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    
+
     if (
       error.response &&
       error.response.status === 401 &&
@@ -56,7 +56,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    
+
     if (
       error.response &&
       error.response.status === 401 &&
@@ -85,7 +85,7 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        
+
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/auth/refresh`,
           { refreshToken }
@@ -109,12 +109,12 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         isRefreshing = false;
 
-        
+
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
 
-        
+
         window.dispatchEvent(new Event('auth-logout'));
 
         return Promise.reject(refreshError);
@@ -124,7 +124,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 export const apiRequest = async (method, url, data = null, config = {}) => {
   const requestConfig = {
     method,
