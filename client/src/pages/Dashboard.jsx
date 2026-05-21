@@ -1,31 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {
-  LogOut,
-  Search,
-  Plus,
-  Trash2,
-  Lock,
-  Sun,
-  Moon,
-  Loader2,
-  FolderOpen,
-  ShieldCheck,
-} from 'lucide-react';
-import { fetchNotes, addNote, deleteNote } from '../features/notes/notesSlice';
+import { Trash2, Lock, FolderOpen } from 'lucide-react';
+import { fetchNotes, deleteNote } from '../features/notes/notesSlice';
 import { logout, localLogout } from '../features/auth/authSlice';
 import Toast from '../components/Toast';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Modal from '../components/Modal';
 import Pagination from '../components/Pagination';
+import Header from '../components/Header';
+import AddNote from '../components/AddNote';
 import { andHelper, orHelper, ternaryHelper } from '../utils/helpers';
 import { useSearch } from '../hooks/useSearch';
 
 const Dashboard = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const { search, setSearch, debouncedSearch } = useSearch('', 400, () => {
     setCurrentPage(1);
@@ -33,7 +21,6 @@ const Dashboard = () => {
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [toast, setToast] = useState(null);
-
 
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -44,29 +31,21 @@ const Dashboard = () => {
     confirmText: 'Confirm',
   });
 
-
   const [selectedNote, setSelectedNote] = useState(null);
-
-
-  const [validationErrors, setValidationErrors] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const noteCreatorRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
-  const { notes, pagination, isLoading, isError, errorMessage } = useSelector(
+  const { notes, pagination, isLoading } = useSelector(
     (state) => state.notes
   );
-
 
   useEffect(() => {
     if (user) {
       dispatch(fetchNotes({ page: currentPage, search: debouncedSearch, limit: itemsPerPage }));
     }
   }, [dispatch, currentPage, debouncedSearch, itemsPerPage, user]);
-
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -81,7 +60,6 @@ const Dashboard = () => {
     }
   }, []);
 
-
   useEffect(() => {
     const handleAuthLogout = () => {
       dispatch(localLogout());
@@ -94,19 +72,6 @@ const Dashboard = () => {
     window.addEventListener('auth-logout', handleAuthLogout);
     return () => window.removeEventListener('auth-logout', handleAuthLogout);
   }, [dispatch, navigate]);
-
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (noteCreatorRef.current && !noteCreatorRef.current.contains(event.target)) {
-        if (!title && !content) {
-          setIsExpanded(false);
-        }
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [title, content]);
 
   const toggleTheme = () => {
     if (isDarkMode) {
@@ -136,87 +101,10 @@ const Dashboard = () => {
     });
   };
 
-
-  const validateField = (name, value) => {
-    let errorMsg = '';
-    if (name === 'title') {
-      if (!value.trim()) {
-        errorMsg = 'Title is required';
-      } else if (value.length > 100) {
-        errorMsg = 'Title cannot exceed 100 characters';
-      }
-    } else if (name === 'content') {
-      if (!value.trim()) {
-        errorMsg = 'Content is required';
-      }
-    }
-
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      if (errorMsg) {
-        next[name] = errorMsg;
-      } else {
-        delete next[name];
-      }
-      return next;
-    });
-
-    return !errorMsg;
-  };
-
-  const handleTitleChange = (e) => {
-    const val = e.target.value;
-    if (val.length <= 120) {
-      setTitle(val);
-      if (isExpanded) {
-        validateField('title', val);
-      }
-    }
-  };
-
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.pages) {
       setCurrentPage(newPage);
     }
-  };
-
-  const handleContentChange = (e) => {
-    const val = e.target.value;
-    setContent(val);
-    if (isExpanded) {
-      validateField('content', val);
-    }
-  };
-
-  const handleAddNote = (e) => {
-    e.preventDefault();
-
-    const isTitleValid = validateField('title', title);
-    const isContentValid = validateField('content', content);
-
-    if (!isTitleValid || !isContentValid) {
-      setToast({ message: 'Please correct the validation errors first.', type: 'error' });
-      return;
-    }
-
-    setIsSaving(true);
-    dispatch(addNote({
-      title: title.trim(),
-      content: content.trim(),
-    })).then((action) => {
-      setIsSaving(false);
-      if (addNote.fulfilled.match(action)) {
-        setTitle('');
-        setContent('');
-        setValidationErrors({});
-        setIsExpanded(false);
-        setToast({ message: 'Note saved securely!', type: 'success' });
-
-        dispatch(fetchNotes({ page: currentPage, search: debouncedSearch, limit: itemsPerPage }));
-      } else {
-        setToast({ message: action.payload || 'Failed to save note', type: 'error' });
-      }
-    });
   };
 
   const handleDeleteNote = (noteId) => {
@@ -245,172 +133,24 @@ const Dashboard = () => {
     });
   };
 
-
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-
-
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-md shadow-primary-500/25">
-              <ShieldCheck className="w-5.5 h-5.5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">
-              SecureNotes
-            </span>
-          </div>
-
-
-          <div className="flex-1 max-w-xl relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="w-4 h-4 text-slate-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search notes by title..."
-              value={search}
-              onChange={(e) => setSearch(e?.target?.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-100 hover:bg-slate-200/60 dark:bg-slate-800 dark:hover:bg-slate-800/80 focus:bg-white dark:focus:bg-slate-900 border border-transparent focus:border-primary-500/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/10 transition-all"
-            />
-          </div>
-
-
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl border border-slate-200/50 hover:bg-slate-50 dark:border-slate-800/50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
-              title="Toggle theme"
-            >
-              {ternaryHelper(isDarkMode, <Sun className="w-4.5 h-4.5" />, <Moon className="w-4.5 h-4.5" />)}
-            </button>
-
-
-            <div className="hidden md:flex flex-col items-end pr-2 text-right">
-              <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                {orHelper(user?.name, 'User')}
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">Encrypted Session</span>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/80 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-1.5"
-              title="Logout"
-            >
-              <LogOut className="w-4.5 h-4.5" />
-              <span className="text-sm font-semibold hidden md:inline">Logout</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
+      <Header
+        search={search}
+        setSearch={setSearch}
+        toggleTheme={toggleTheme}
+        isDarkMode={isDarkMode}
+        user={user}
+        handleLogout={handleLogout}
+      />
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-
-
-        <section className="flex flex-col items-center gap-4" ref={noteCreatorRef}>
-          <form
-            onSubmit={handleAddNote}
-            className={`w-full max-w-xl rounded-2xl border bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/80 note-creator-glow transition-all duration-300 ${ternaryHelper(isExpanded, 'p-5', 'px-4 py-2 flex items-center gap-3')}`}
-          >
-            {isExpanded ? (
-              <div className="space-y-4 w-full">
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <input
-                      type="text"
-                      placeholder="Title"
-                      value={title}
-                      onChange={handleTitleChange}
-                      className="w-full font-bold text-base bg-transparent border-none outline-none placeholder-slate-400 text-slate-900 dark:text-white"
-                      autoFocus
-                    />
-                    <span
-                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full select-none ${title.length > 100
-                        ? 'bg-rose-100 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400'
-                        : title.length > 80
-                          ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400'
-                          : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
-                        }`}
-                    >
-                      {title.length}/100
-                    </span>
-                  </div>
-                  {andHelper(validationErrors?.title, (
-                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors?.title}</p>
-                  ))}
-                </div>
-
-                <div>
-                  <textarea
-                    placeholder="Take a note securely..."
-                    value={content}
-                    onChange={handleContentChange}
-                    rows={4}
-                    className="w-full text-sm bg-transparent border-none outline-none resize-none placeholder-slate-400 text-slate-800 dark:text-slate-200"
-                  />
-                  {andHelper(validationErrors?.content, (
-                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors?.content}</p>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
-                    <Lock className="w-3.5 h-3.5 text-primary-500" /> End-to-End Encrypted
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTitle('');
-                        setContent('');
-                        setValidationErrors({});
-                        setIsExpanded(false);
-                      }}
-                      className="px-4 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSaving}
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary-600 hover:bg-primary-500 disabled:opacity-40 disabled:hover:bg-primary-600 text-white text-xs font-semibold shadow-md shadow-primary-500/10 active:scale-[0.98] transition-all"
-                    >
-                      {isSaving ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Plus className="w-3.5 h-3.5" />
-                      )}
-                      {isSaving ? 'Saving...' : 'Save'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <input
-                  type="text"
-                  placeholder="Take a note securely..."
-                  onClick={() => setIsExpanded(true)}
-                  className="w-full py-1 text-sm bg-transparent border-none outline-none placeholder-slate-400 cursor-pointer text-slate-900 dark:text-white"
-                  readOnly
-                />
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(true)}
-                  className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-550 hover:text-primary-500 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </>
-            )}
-          </form>
-        </section>
-
+        <AddNote
+          onSuccess={() => {
+            dispatch(fetchNotes({ page: currentPage, search: debouncedSearch, limit: itemsPerPage }));
+          }}
+          setToast={setToast}
+        />
 
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/50 dark:border-slate-800/50 pb-3 gap-3">
@@ -421,7 +161,6 @@ const Dashboard = () => {
                 {pagination.total}
               </span>
             </h2>
-
 
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-450">
               <span>Show:</span>
@@ -439,7 +178,6 @@ const Dashboard = () => {
               </select>
             </div>
           </div>
-
 
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -476,7 +214,6 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {notes.map((note) => (
                   <article
@@ -485,7 +222,6 @@ const Dashboard = () => {
                   >
                     {(() => {
                       const isLengthy = note?.content?.length > 150;
-                      // Replace duplicate whitespaces and linebreaks for note card preview layout
                       const previewText = note?.content?.replace(/\s+/g, ' ');
                       const truncatedText = isLengthy ? previewText.substring(0, 147) : previewText;
                       return (
@@ -537,7 +273,6 @@ const Dashboard = () => {
                 ))}
               </div>
 
-
               <Pagination
                 pages={pagination?.pages}
                 currentPage={currentPage}
@@ -551,7 +286,6 @@ const Dashboard = () => {
         </section>
       </main>
 
-
       <Modal
         isOpen={!!selectedNote}
         onClose={() => setSelectedNote(null)}
@@ -559,7 +293,6 @@ const Dashboard = () => {
         content={orHelper(selectedNote?.content, '')}
         date={selectedNote?.createdAt}
       />
-
 
       <ConfirmationModal
         isOpen={confirmModal?.isOpen}
@@ -570,7 +303,6 @@ const Dashboard = () => {
         confirmText={confirmModal?.confirmText}
         type={confirmModal?.type}
       />
-
 
       {andHelper(toast, (
         <Toast

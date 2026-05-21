@@ -64,10 +64,13 @@ secure-notes-app/
     │   ├── app/
     │   │   └── store.js                    # Redux configureStore combining slices
     │   ├── components/
+    │   │   ├── AddNote.jsx                 # Composer component for adding secure notes
     │   │   ├── ConfirmationModal.jsx       # Reusable confirmation dialog for delete and logout events
+    │   │   ├── Header.jsx                  # Dashboard top bar with search, theme, and user settings
     │   │   ├── Modal.jsx                   # Reusable interactive view modal for lengthy note contents
     │   │   ├── Pagination.jsx              # Reusable pagination controls with page indicators
     │   │   ├── PrivateRoute.jsx            # Guard protecting Dashboard access
+    │   │   ├── SearchBar.jsx               # Reusable query search input component
     │   │   └── Toast.jsx                   # Custom Alert Toast component with dark mode style
     │   ├── features/
     │   │   ├── auth/
