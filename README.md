@@ -1,6 +1,6 @@
-# CrypNote - Secure MERN Stack Notes Application
+# SecureNotes - Secure MERN Stack Notes Application
 
-CrypNote is a modern, responsive, and secure notes-taking application (inspired by Google Keep but with premium aesthetics and end-to-end client-side encryption).
+SecureNotes is a modern, responsive, and secure notes-taking application (inspired by Google Keep but with premium aesthetics and end-to-end client-side encryption).
 
 All note contents are encrypted on the client side using **AES-256 (CryptoJS)** BEFORE being transmitted to the backend server. The backend receives and stores only ciphertext, ensuring absolute user privacy—even if the database is compromised, your note contents remain fully confidential.
 

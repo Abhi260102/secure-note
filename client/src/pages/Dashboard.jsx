@@ -32,7 +32,7 @@ const Dashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [toast, setToast] = useState(null);
 
-  
+
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: '',
@@ -42,10 +42,10 @@ const Dashboard = () => {
     confirmText: 'Confirm',
   });
 
-  
+
   const [selectedNote, setSelectedNote] = useState(null);
 
-  
+
   const [validationErrors, setValidationErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -58,24 +58,24 @@ const Dashboard = () => {
     (state) => state.notes
   );
 
-  
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       setDebouncedSearch(search);
-      setCurrentPage(1); 
+      setCurrentPage(1);
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
 
-  
+
   useEffect(() => {
     if (user) {
       dispatch(fetchNotes({ page: currentPage, search: debouncedSearch, limit: itemsPerPage }));
     }
   }, [dispatch, currentPage, debouncedSearch, itemsPerPage, user]);
 
-  
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -89,7 +89,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  
+
   useEffect(() => {
     const handleAuthLogout = () => {
       dispatch(localLogout());
@@ -103,7 +103,7 @@ const Dashboard = () => {
     return () => window.removeEventListener('auth-logout', handleAuthLogout);
   }, [dispatch, navigate]);
 
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (noteCreatorRef.current && !noteCreatorRef.current.contains(event.target)) {
@@ -144,7 +144,7 @@ const Dashboard = () => {
     });
   };
 
-  
+
   const validateField = (name, value) => {
     let errorMsg = '';
     if (name === 'title') {
@@ -174,7 +174,7 @@ const Dashboard = () => {
 
   const handleTitleChange = (e) => {
     const val = e.target.value;
-    if (val.length <= 120) { 
+    if (val.length <= 120) {
       setTitle(val);
       if (isExpanded) {
         validateField('title', val);
@@ -219,7 +219,7 @@ const Dashboard = () => {
         setValidationErrors({});
         setIsExpanded(false);
         setToast({ message: 'Note saved securely!', type: 'success' });
-        
+
         dispatch(fetchNotes({ page: currentPage, search: debouncedSearch, limit: itemsPerPage }));
       } else {
         setToast({ message: action.payload || 'Failed to save note', type: 'error' });
@@ -239,7 +239,7 @@ const Dashboard = () => {
         dispatch(deleteNote(noteId)).then((action) => {
           if (deleteNote.fulfilled.match(action)) {
             setToast({ message: 'Note deleted successfully', type: 'info' });
-            
+
             if (notes.length === 1 && currentPage > 1) {
               setCurrentPage(currentPage - 1);
             } else {
@@ -257,21 +257,21 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      
+
       <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
-          
+
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-md shadow-primary-500/25">
               <ShieldCheck className="w-5.5 h-5.5 text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">
-              CrypNote
+              SecureNotes
             </span>
           </div>
 
-          
+
           <div className="flex-1 max-w-xl relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="w-4 h-4 text-slate-400" />
@@ -285,7 +285,7 @@ const Dashboard = () => {
             />
           </div>
 
-          
+
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={toggleTheme}
@@ -295,7 +295,7 @@ const Dashboard = () => {
               {isDarkMode ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
             </button>
 
-            
+
             <div className="hidden md:flex flex-col items-end pr-2 text-right">
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 {user?.name}
@@ -315,10 +315,10 @@ const Dashboard = () => {
         </div>
       </header>
 
-      
+
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-        
+
         <section className="flex flex-col items-center gap-4" ref={noteCreatorRef}>
           <form
             onSubmit={handleAddNote}
@@ -420,7 +420,7 @@ const Dashboard = () => {
           </form>
         </section>
 
-        
+
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/50 dark:border-slate-800/50 pb-3 gap-3">
             <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
@@ -431,7 +431,7 @@ const Dashboard = () => {
               </span>
             </h2>
 
-            
+
             <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-450">
               <span>Show:</span>
               <select
@@ -449,7 +449,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          
+
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {[...Array(itemsPerPage || 6)].map((_, idx) => (
@@ -483,7 +483,7 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {notes.map((note) => (
                   <article
@@ -544,7 +544,7 @@ const Dashboard = () => {
                 ))}
               </div>
 
-              
+
               {pagination.pages > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
                   <div className="flex items-center gap-1.5">
@@ -557,7 +557,7 @@ const Dashboard = () => {
                       <ChevronLeft className="w-4 h-4" />
                     </button>
 
-                    
+
                     {[...Array(pagination.pages)].map((_, index) => {
                       const pageNum = index + 1;
                       return (
@@ -594,7 +594,7 @@ const Dashboard = () => {
         </section>
       </main>
 
-      
+
       <Modal
         isOpen={!!selectedNote}
         onClose={() => setSelectedNote(null)}
@@ -603,7 +603,7 @@ const Dashboard = () => {
         date={selectedNote?.createdAt}
       />
 
-      
+
       <ConfirmationModal
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}
@@ -614,7 +614,7 @@ const Dashboard = () => {
         type={confirmModal.type}
       />
 
-      
+
       {toast && (
         <Toast
           message={toast.message}

@@ -184,7 +184,7 @@ const AuthPage = () => {
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-sans">
               {authView === 'forgot-password' && 'Reset Password'}
               {authView === 'reset-password' && 'New Password'}
-              {(authView === 'login' || authView === 'register') && 'CrypNote'}
+              {(authView === 'login' || authView === 'register') && 'SecureNotes'}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 flex items-center justify-center gap-1.5">
               {authView === 'forgot-password' && 'Generate a secure password reset link'}
