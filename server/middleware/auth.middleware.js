@@ -11,10 +11,10 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      // Decode and verify token
+      
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Fetch user to verify they still exist and check password change history
+      
       const user = await User.findById(decoded.id);
       if (!user) {
         return res.status(401).json({
@@ -24,7 +24,7 @@ const protect = async (req, res, next) => {
         });
       }
 
-      // Check if password changed after token was issued
+      
       if (user.passwordChangedAt) {
         const changedTimestamp = parseInt(user.passwordChangedAt.getTime() / 1000, 10);
         if (decoded.iat < changedTimestamp) {

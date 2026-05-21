@@ -9,7 +9,7 @@ const { validateNote } = require('../middleware/validators');
 
 const router = express.Router();
 
-// Apply protect middleware to all notes routes
+
 router.use(protect);
 
 router.route('/')

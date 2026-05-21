@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
-// Helper to handle validation errors
+
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

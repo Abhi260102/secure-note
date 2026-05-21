@@ -9,11 +9,11 @@ const ConfirmationModal = ({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  type = 'danger', // 'danger' | 'warning' | 'info'
+  type = 'danger', 
 }) => {
   const cancelBtnRef = useRef(null);
 
-  // Close modal on ESC key
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -24,7 +24,7 @@ const ConfirmationModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onCancel]);
 
-  // Focus the cancel button on open for accessibility / safety
+  
   useEffect(() => {
     if (isOpen && cancelBtnRef.current) {
       setTimeout(() => cancelBtnRef.current.focus(), 50);
@@ -33,7 +33,7 @@ const ConfirmationModal = ({
 
   if (!isOpen) return null;
 
-  // Type styling configuration
+  
   const typeConfig = {
     danger: {
       icon: <AlertTriangle className="w-6 h-6 text-rose-600 dark:text-rose-400" />,
@@ -56,19 +56,19 @@ const ConfirmationModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      
       <div 
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 dark:bg-slate-950/60"
         onClick={onCancel}
       />
 
-      {/* Modal Container */}
+      
       <div 
         role="dialog"
         aria-modal="true"
         className="relative w-full max-w-md transform overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 text-left align-middle shadow-xl transition-all duration-300 dark:border-slate-800/85 dark:bg-slate-900 animate-in fade-in zoom-in-95 duration-200"
       >
-        {/* Close Button */}
+        
         <button
           onClick={onCancel}
           className="absolute top-4 right-4 rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors"
@@ -77,9 +77,9 @@ const ConfirmationModal = ({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Modal Content */}
+        
         <div className="flex gap-4">
-          {/* Icon Badge */}
+          
           <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${bgIcon}`}>
             {icon}
           </div>
@@ -94,7 +94,7 @@ const ConfirmationModal = ({
           </div>
         </div>
 
-        {/* Modal Action Buttons */}
+        
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"

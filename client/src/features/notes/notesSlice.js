@@ -15,9 +15,9 @@ const initialState = {
   errorMessage: '',
 };
 
-// Async Thunks
 
-// Fetch notes (with pagination and optional search filter)
+
+
 export const fetchNotes = createAsyncThunk(
   'notes/fetchAll',
   async ({ page = 1, search = '', limit = 12 }, thunkAPI) => {
@@ -25,7 +25,7 @@ export const fetchNotes = createAsyncThunk(
       const data = await getRequest(`/notes?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
       
       if (data.success) {
-        // Decrypt note contents on the fly
+        
         const decryptedNotes = data.data.notes.map((note) => ({
           ...note,
           content: decryptNoteContent(note.content),
@@ -44,12 +44,12 @@ export const fetchNotes = createAsyncThunk(
   }
 );
 
-// Add Note
+
 export const addNote = createAsyncThunk(
   'notes/add',
   async ({ title, content }, thunkAPI) => {
     try {
-      // Encrypt content on frontend BEFORE sending to API
+      
       const encryptedContent = encryptNoteContent(content);
 
       const data = await postRequest('/notes', {
@@ -58,7 +58,7 @@ export const addNote = createAsyncThunk(
       });
 
       if (data.success) {
-        // Decrypt the newly added note for local storage state
+        
         const decryptedNote = {
           ...data.data,
           content: decryptNoteContent(data.data.content),
@@ -73,7 +73,7 @@ export const addNote = createAsyncThunk(
   }
 );
 
-// Delete Note
+
 export const deleteNote = createAsyncThunk(
   'notes/delete',
   async (noteId, thunkAPI) => {
@@ -109,7 +109,7 @@ const notesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Notes
+      
       .addCase(fetchNotes.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
@@ -124,13 +124,13 @@ const notesSlice = createSlice({
         state.isError = true;
         state.errorMessage = action.payload;
       })
-      // Add Note
+      
       .addCase(addNote.pending, (state) => {
-        // We don't block the UI with full-screen loading, but can track if needed
+        
         state.isError = false;
       })
       .addCase(addNote.fulfilled, (state, action) => {
-        // Prepend the new note to the top of list
+        
         state.notes = [action.payload, ...state.notes];
         state.pagination.total += 1;
       })
@@ -138,7 +138,7 @@ const notesSlice = createSlice({
         state.isError = true;
         state.errorMessage = action.payload;
       })
-      // Delete Note
+      
       .addCase(deleteNote.fulfilled, (state, action) => {
         state.notes = state.notes.filter((note) => note._id !== action.payload);
         state.pagination.total -= 1;

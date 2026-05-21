@@ -2,11 +2,7 @@ import CryptoJS from 'crypto-js';
 
 const SECRET_KEY = import.meta.env.VITE_AES_SECRET || 'fallback-secret-key-123';
 
-/**
- * Encrypt note content using AES
- * @param {string} text - Plain text to encrypt
- * @returns {string} - Base64 encrypted cipher text
- */
+
 export const encryptNoteContent = (text) => {
   if (!text) return '';
   try {
@@ -17,11 +13,7 @@ export const encryptNoteContent = (text) => {
   }
 };
 
-/**
- * Decrypt note content using AES
- * @param {string} ciphertext - Encrypted cipher text
- * @returns {string} - Decrypted plain text
- */
+
 export const decryptNoteContent = (ciphertext) => {
   if (!ciphertext) return '';
   try {

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { postRequest } from '../../api/api';
 
-// Retrieve initial state from local storage if available
+
 const user = JSON.parse(localStorage.getItem('user'));
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
@@ -16,7 +16,7 @@ const initialState = {
   isSuccess: false,
 };
 
-// Async Thunks
+
 export const register = createAsyncThunk(
   'auth/register',
   async (userData, thunkAPI) => {
@@ -100,7 +100,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Register
+      
       .addCase(register.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
@@ -118,7 +118,7 @@ const authSlice = createSlice({
         state.errorMessage = action.payload;
         state.user = null;
       })
-      // Login
+      
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
@@ -136,7 +136,7 @@ const authSlice = createSlice({
         state.errorMessage = action.payload;
         state.user = null;
       })
-      // Logout
+      
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.accessToken = null;

@@ -7,7 +7,7 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to attach JWT access token
+
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
@@ -21,7 +21,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle token refresh
+
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -43,7 +43,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle immediate logout for non-expired 401s (e.g. password changed, token invalid)
+    
     if (
       error.response &&
       error.response.status === 401 &&
@@ -56,7 +56,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Check if error is 401 Unauthorized and we haven't retried yet
+    
     if (
       error.response &&
       error.response.status === 401 &&
@@ -85,7 +85,7 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        // Call the refresh endpoint (using direct axios to avoid interceptor loop)
+        
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/auth/refresh`,
           { refreshToken }
@@ -109,12 +109,12 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         isRefreshing = false;
 
-        // Refresh token failed -> clear tokens and force logout
+        
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
 
-        // Dispatch custom event to trigger logout in Redux store/UI
+        
         window.dispatchEvent(new Event('auth-logout'));
 
         return Promise.reject(refreshError);

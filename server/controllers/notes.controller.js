@@ -1,8 +1,8 @@
 const Note = require('../models/note.model');
 
-// @desc    Create a new note
-// @route   POST /api/notes
-// @access  Private
+
+
+
 const createNote = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -10,7 +10,7 @@ const createNote = async (req, res, next) => {
     const note = await Note.create({
       userId: req.user.id,
       title,
-      content, // stores encrypted string from frontend
+      content,
     });
 
     res.status(201).json({
@@ -23,9 +23,9 @@ const createNote = async (req, res, next) => {
   }
 };
 
-// @desc    Get all notes of logged-in user (with pagination and title search)
-// @route   GET /api/notes
-// @access  Private
+
+
+
 const getNotes = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
@@ -33,7 +33,7 @@ const getNotes = async (req, res, next) => {
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    // Search query on title (since content is encrypted, server can't search it)
+
     const query = { userId: req.user.id };
     if (search) {
       query.title = { $regex: search, $options: 'i' };
@@ -64,14 +64,13 @@ const getNotes = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a note
-// @route   DELETE /api/notes/:id
-// @access  Private
+
+
 const deleteNote = async (req, res, next) => {
   try {
     const noteId = req.params.id;
 
-    // Find note
+
     const note = await Note.findById(noteId);
 
     if (!note) {
@@ -81,7 +80,7 @@ const deleteNote = async (req, res, next) => {
       });
     }
 
-    // Verify ownership
+
     if (note.userId.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         success: false,

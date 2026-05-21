@@ -5,7 +5,7 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
   const modalRef = useRef(null);
   const [copied, setCopied] = useState(false);
 
-  // Close modal on ESC key press
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Reset copied state when modal opens/closes
+  
   useEffect(() => {
     if (!isOpen) {
       setCopied(false);
@@ -25,11 +25,11 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
 
   if (!isOpen) return null;
 
-  // Calculate statistics
+  
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const charCount = content.length;
 
-  // Clipboard copy handler
+  
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content);
@@ -40,7 +40,7 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
     }
   };
 
-  // Formatted date
+  
   const formattedDate = date
     ? new Date(date).toLocaleDateString(undefined, {
       weekday: 'long',
@@ -54,23 +54,23 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Glass backdrop */}
+      
       <div
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 dark:bg-slate-950/60"
         onClick={onClose}
       />
 
-      {/* Premium Modal Box */}
+      
       <div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
         className="relative w-full max-w-2xl transform overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl backdrop-blur-lg transition-all duration-300 dark:border-slate-850 dark:bg-slate-900/95 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]"
       >
-        {/* Top visual accent bar */}
+        
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary-500 to-indigo-500" />
 
-        {/* Close Button */}
+        
         <button
           onClick={onClose}
           className="absolute top-4 right-4 rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-all focus:outline-none"
@@ -79,7 +79,7 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header Section */}
+        
         <div className="flex gap-4 pb-4 border-b border-slate-100 dark:border-slate-800/80 items-start">
           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary-500 to-indigo-500 text-white shadow-lg shadow-primary-500/20">
             <Lock className="w-5 h-5 animate-pulse" />
@@ -97,16 +97,16 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
           </div>
         </div>
 
-        {/* Note Content Viewport */}
+        
         <div className="flex-1 overflow-y-auto py-5">
           <div className="bg-slate-50/70 dark:bg-slate-950/40 border border-slate-200/40 dark:border-slate-800 p-5 rounded-2xl max-h-[45vh] overflow-y-auto font-sans leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words text-sm tracking-wide">
             {content || <span className="italic text-slate-400">Empty note</span>}
           </div>
         </div>
 
-        {/* Note Statistics Bar */}
+        
         <div className="flex flex-wrap gap-4 items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/80">
-          {/* Metrics labels */}
+          
           <div className="flex gap-3 text-xs text-slate-400 dark:text-slate-500 font-mono font-medium">
             <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/60 px-2.5 py-1 rounded-lg">
               <FileText className="w-3.5 h-3.5" />
@@ -117,7 +117,7 @@ const Modal = ({ isOpen, onClose, title, content = '', date }) => {
             </span>
           </div>
 
-          {/* Action buttons */}
+          
           <div className="flex gap-2">
             <button
               type="button"

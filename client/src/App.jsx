@@ -39,11 +39,11 @@ function AppContent() {
   return (
     <Router>
       <Routes>
-        {/* Auth Routes */}
+        
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/reset-password/:token" element={<AuthPage />} />
 
-        {/* Private Dashboard Route */}
+        
         <Route
           path="/dashboard"
           element={
@@ -53,7 +53,7 @@ function AppContent() {
           }
         />
 
-        {/* Catch-all Route redirects based on auth state */}
+        
         <Route path="*" element={<RootRedirect />} />
       </Routes>
     </Router>

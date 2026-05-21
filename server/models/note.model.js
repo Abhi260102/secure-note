@@ -22,7 +22,7 @@ const noteSchema = new mongoose.Schema(
   }
 );
 
-// Add index on userId for faster retrieval
+
 noteSchema.index({ userId: 1 });
 
 module.exports = mongoose.model('Note', noteSchema);
