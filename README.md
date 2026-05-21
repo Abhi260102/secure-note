@@ -33,7 +33,6 @@ All note contents are encrypted on the client side using **AES-256 (CryptoJS)** 
 
 ```text
 secure-notes-app/
-├── docker-compose.yml                      # Orchestrates entire stack (client, server, MongoDB)
 ├── README.md                               # Setup, API, and architectural docs
 ├── secure-notes.postman_collection.json    # JSON to import all endpoints in Postman
 │
@@ -65,25 +64,30 @@ secure-notes-app/
     │   ├── app/
     │   │   └── store.js                    # Redux configureStore combining slices
     │   ├── components/
+    │   │   ├── ConfirmationModal.jsx       # Reusable confirmation dialog for delete and logout events
+    │   │   ├── Modal.jsx                   # Reusable interactive view modal for lengthy note contents
+    │   │   ├── Pagination.jsx              # Reusable pagination controls with page indicators
     │   │   ├── PrivateRoute.jsx            # Guard protecting Dashboard access
-    │   │   └── Toast.jsx                   # Custom Alert Toast component
+    │   │   └── Toast.jsx                   # Custom Alert Toast component with dark mode style
     │   ├── features/
     │   │   ├── auth/
     │   │   │   └── authSlice.js            # Auth states, login/logout thunks, localStorage sync
     │   │   └── notes/
     │   │       └── notesSlice.js           # Notes state, client-side encryption/decryption, CRUD thunks
+    │   ├── hooks/
+    │   │   └── useSearch.js                # Custom hook for debounced search and page resets
     │   ├── pages/
     │   │   ├── AuthPage.jsx                # Responsive Login/Register Tabs
     │   │   └── Dashboard.jsx               # Notes listing grid, Keep composer, search, pagination
     │   ├── utils/
-    │   │   └── crypto.js                   # Encrypt / Decrypt wrapper using CryptoJS AES
+    │   │   ├── crypto.js                   # Encrypt / Decrypt wrapper using CryptoJS AES
+    │   │   └── helpers.js                  # Logic helper utilities for AND, OR, and Ternary operations
     │   ├── App.jsx                         # Main Routing definition & Redux Providers
     │   ├── index.css                       # Google fonts imports, Tailwind base, scrollbars
     │   └── main.jsx
     ├── .env.example                        # Template for client variables (Secret AES keys)
     ├── tailwind.config.js                  # Tailwind styles and dark mode class triggers
     ├── postcss.config.js
-    ├── nginx.conf                          # Custom routing redirect for SPA Docker container
     └── package.json
 ```
 
@@ -144,23 +148,6 @@ When a user creates a note:
     npm run dev
     ```
     *Client runs on [http://localhost:5173](http://localhost:5173).*
-
----
-
-## 🐳 Running with Docker
-
-You can spin up the entire stack (React web app, Node API server, and MongoDB) in one go using Docker Compose.
-
-1.  Ensure you have Docker and Docker Compose installed.
-2.  From the root directory (`secure-notes-app/`), run:
-    ```bash
-    docker-compose up --build
-    ```
-3.  Docker will:
-    *   Initialize MongoDB container and create a volume for storage.
-    *   Build and launch the Express Server on port `5001`.
-    *   Build the React App, bundle it using Vite, and serve it via Nginx on port `3000`.
-4.  Access the web application at **[http://localhost:3000](http://localhost:3000)**.
 
 ---
 

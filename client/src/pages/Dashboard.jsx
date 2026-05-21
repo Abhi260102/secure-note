@@ -11,8 +11,6 @@ import {
   Moon,
   Loader2,
   FolderOpen,
-  ChevronLeft,
-  ChevronRight,
   ShieldCheck,
 } from 'lucide-react';
 import { fetchNotes, addNote, deleteNote } from '../features/notes/notesSlice';
@@ -20,14 +18,18 @@ import { logout, localLogout } from '../features/auth/authSlice';
 import Toast from '../components/Toast';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Modal from '../components/Modal';
+import Pagination from '../components/Pagination';
+import { andHelper, orHelper, ternaryHelper } from '../utils/helpers';
+import { useSearch } from '../hooks/useSearch';
 
 const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const { search, setSearch, debouncedSearch } = useSearch('', 400, () => {
+    setCurrentPage(1);
+  });
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [toast, setToast] = useState(null);
@@ -57,16 +59,6 @@ const Dashboard = () => {
   const { notes, pagination, isLoading, isError, errorMessage } = useSelector(
     (state) => state.notes
   );
-
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      setDebouncedSearch(search);
-      setCurrentPage(1);
-    }, 400);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [search]);
 
 
   useEffect(() => {
@@ -280,7 +272,7 @@ const Dashboard = () => {
               type="text"
               placeholder="Search notes by title..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e?.target?.value)}
               className="w-full pl-10 pr-4 py-2 bg-slate-100 hover:bg-slate-200/60 dark:bg-slate-800 dark:hover:bg-slate-800/80 focus:bg-white dark:focus:bg-slate-900 border border-transparent focus:border-primary-500/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/10 transition-all"
             />
           </div>
@@ -292,13 +284,13 @@ const Dashboard = () => {
               className="p-2.5 rounded-xl border border-slate-200/50 hover:bg-slate-50 dark:border-slate-800/50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
               title="Toggle theme"
             >
-              {isDarkMode ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+              {ternaryHelper(isDarkMode, <Sun className="w-4.5 h-4.5" />, <Moon className="w-4.5 h-4.5" />)}
             </button>
 
 
             <div className="hidden md:flex flex-col items-end pr-2 text-right">
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                {user?.name}
+                {orHelper(user?.name, 'User')}
               </span>
               <span className="text-[10px] text-slate-400 font-mono">Encrypted Session</span>
             </div>
@@ -322,8 +314,7 @@ const Dashboard = () => {
         <section className="flex flex-col items-center gap-4" ref={noteCreatorRef}>
           <form
             onSubmit={handleAddNote}
-            className={`w-full max-w-xl rounded-2xl border bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/80 note-creator-glow transition-all duration-300 ${isExpanded ? 'p-5' : 'px-4 py-2 flex items-center gap-3'
-              }`}
+            className={`w-full max-w-xl rounded-2xl border bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/80 note-creator-glow transition-all duration-300 ${ternaryHelper(isExpanded, 'p-5', 'px-4 py-2 flex items-center gap-3')}`}
           >
             {isExpanded ? (
               <div className="space-y-4 w-full">
@@ -348,9 +339,9 @@ const Dashboard = () => {
                       {title.length}/100
                     </span>
                   </div>
-                  {validationErrors.title && (
-                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors.title}</p>
-                  )}
+                  {andHelper(validationErrors?.title, (
+                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors?.title}</p>
+                  ))}
                 </div>
 
                 <div>
@@ -361,9 +352,9 @@ const Dashboard = () => {
                     rows={4}
                     className="w-full text-sm bg-transparent border-none outline-none resize-none placeholder-slate-400 text-slate-800 dark:text-slate-200"
                   />
-                  {validationErrors.content && (
-                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors.content}</p>
-                  )}
+                  {andHelper(validationErrors?.content, (
+                    <p className="text-[11px] text-rose-500 font-semibold">{validationErrors?.content}</p>
+                  ))}
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -476,9 +467,11 @@ const Dashboard = () => {
               </div>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No notes found</p>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-sm mx-auto">
-                {debouncedSearch
-                  ? "We couldn't find any note matching that title. Try searching for something else."
-                  : 'Start by writing your first secure note using the creator panel above.'}
+                {ternaryHelper(
+                  debouncedSearch,
+                  "We couldn't find any note matching that title. Try searching for something else.",
+                  'Start by writing your first secure note using the creator panel above.'
+                )}
               </p>
             </div>
           ) : (
@@ -487,13 +480,13 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {notes.map((note) => (
                   <article
-                    key={note._id}
+                    key={note?._id}
                     className="glass-card rounded-2xl p-5 border border-slate-200/60 dark:border-slate-800/50 bg-white/70 dark:bg-slate-900/60 hover:border-primary-400/50 dark:hover:border-primary-800/50 group flex flex-col justify-between h-48 relative overflow-hidden transition-all duration-300"
                   >
                     {(() => {
-                      const isLengthy = note.content.length > 150;
+                      const isLengthy = note?.content?.length > 150;
                       // Replace duplicate whitespaces and linebreaks for note card preview layout
-                      const previewText = note.content.replace(/\s+/g, ' ');
+                      const previewText = note?.content?.replace(/\s+/g, ' ');
                       const truncatedText = isLengthy ? previewText.substring(0, 147) : previewText;
                       return (
                         <div
@@ -503,7 +496,7 @@ const Dashboard = () => {
                         >
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1 break-words group-hover/content:text-primary-600 dark:group-hover/content:text-primary-400 transition-colors">
-                              {note.title}
+                              {note?.title}
                             </h3>
                             <div className="text-slate-400 dark:text-slate-500 group-hover/content:text-primary-500 transition-colors flex-shrink-0" title="AES-256 Encrypted">
                               <Lock className="w-3.5 h-3.5" />
@@ -525,7 +518,7 @@ const Dashboard = () => {
 
                     <div className="flex items-center justify-between pt-3 border-t border-slate-100/50 dark:border-slate-800/50 mt-3">
                       <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono font-medium">
-                        {new Date(note.createdAt).toLocaleDateString(undefined, {
+                        {new Date(note?.createdAt).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
@@ -533,7 +526,7 @@ const Dashboard = () => {
                       </span>
 
                       <button
-                        onClick={() => handleDeleteNote(note._id)}
+                        onClick={() => handleDeleteNote(note?._id)}
                         className="p-1.5 rounded-lg text-slate-450 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 dark:text-slate-400 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
                         title="Delete note"
                       >
@@ -545,50 +538,14 @@ const Dashboard = () => {
               </div>
 
 
-              {pagination.pages > 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1 || isLoading}
-                      className="p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-slate-850 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                      title="Previous Page"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-
-
-                    {[...Array(pagination.pages)].map((_, index) => {
-                      const pageNum = index + 1;
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => handlePageChange(pageNum)}
-                          disabled={isLoading}
-                          className={`w-9 h-9 rounded-xl text-xs font-semibold transition-all ${currentPage === pageNum
-                            ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                            : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 dark:border-slate-850'
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === pagination.pages || isLoading}
-                      className="p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-slate-850 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                      title="Next Page"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                    Showing notes {Math.min((currentPage - 1) * itemsPerPage + 1, pagination.total)} - {Math.min(currentPage * itemsPerPage, pagination.total)} of {pagination.total}
-                  </span>
-                </div>
-              )}
+              <Pagination
+                pages={pagination?.pages}
+                currentPage={currentPage}
+                total={pagination?.total}
+                limit={itemsPerPage}
+                onPageChange={handlePageChange}
+                isLoading={isLoading}
+              />
             </>
           )}
         </section>
@@ -598,30 +555,30 @@ const Dashboard = () => {
       <Modal
         isOpen={!!selectedNote}
         onClose={() => setSelectedNote(null)}
-        title={selectedNote?.title || ''}
-        content={selectedNote?.content || ''}
+        title={orHelper(selectedNote?.title, '')}
+        content={orHelper(selectedNote?.content, '')}
         date={selectedNote?.createdAt}
       />
 
 
       <ConfirmationModal
-        isOpen={confirmModal.isOpen}
-        title={confirmModal.title}
-        message={confirmModal.message}
-        onConfirm={confirmModal.onConfirm}
+        isOpen={confirmModal?.isOpen}
+        title={confirmModal?.title}
+        message={confirmModal?.message}
+        onConfirm={confirmModal?.onConfirm}
         onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
-        confirmText={confirmModal.confirmText}
-        type={confirmModal.type}
+        confirmText={confirmModal?.confirmText}
+        type={confirmModal?.type}
       />
 
 
-      {toast && (
+      {andHelper(toast, (
         <Toast
-          message={toast.message}
-          type={toast.type}
+          message={toast?.message}
+          type={toast?.type}
           onClose={() => setToast(null)}
         />
-      )}
+      ))}
     </div>
   );
 };
