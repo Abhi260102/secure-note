@@ -175,7 +175,7 @@ You can spin up the entire stack (React web app, Node API server, and MongoDB) i
 *   `POST /api/auth/reset-password/:token` - Resets user password. Body: `{ password }`
 
 ### Notes Endpoints (Protected by Authorization: `Bearer <accessToken>`)
-*   `GET /api/notes` - Returns paginated, sorted notes for current user. Query Params: `page` (default 1), `limit` (default 12), `search` (matches note titles).
+*   `GET /api/notes` - Returns paginated, sorted notes for current user. Query Params: `page` (default 1), `limit` (default 6), `search` (matches note titles).
 *   `POST /api/notes` - Saves a new note. Body: `{ title, content }` (where `content` is AES encrypted).
 *   `DELETE /api/notes/:id` - Deletes a note by ID.
 
