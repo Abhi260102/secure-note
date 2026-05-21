@@ -57,6 +57,16 @@ const AuthPage = () => {
   }, [token]);
 
   useEffect(() => {
+    const msg = localStorage.getItem('logoutMessage');
+    const type = localStorage.getItem('logoutMessageType');
+    if (msg) {
+      setToast({ message: msg, type: type || 'success' });
+      localStorage.removeItem('logoutMessage');
+      localStorage.removeItem('logoutMessageType');
+    }
+  }, []);
+
+  useEffect(() => {
     if (user) {
       navigate('/dashboard');
     }

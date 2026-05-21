@@ -52,6 +52,8 @@ api.interceptors.response.use(
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      localStorage.setItem('logoutMessage', 'Session expired. Please log in again.');
+      localStorage.setItem('logoutMessageType', 'warning');
       window.dispatchEvent(new Event('auth-logout'));
       return Promise.reject(error);
     }
@@ -113,6 +115,8 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        localStorage.setItem('logoutMessage', 'Session expired. Please log in again.');
+        localStorage.setItem('logoutMessageType', 'warning');
 
 
         window.dispatchEvent(new Event('auth-logout'));

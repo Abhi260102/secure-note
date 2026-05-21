@@ -72,6 +72,8 @@ export const logout = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.setItem('logoutMessage', 'Logged out successfully!');
+    localStorage.setItem('logoutMessageType', 'success');
   }
 });
 
