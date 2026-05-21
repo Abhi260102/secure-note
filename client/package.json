@@ -14,7 +14,7 @@
     "axios": "^1.7.2",
     "canvas-confetti": "^1.9.3",
     "crypto-js": "^4.2.0",
-    "lucide-react": "^0.379.0",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.51.5",

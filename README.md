@@ -137,7 +137,7 @@ When a user creates a note:
     ```
 2.  Install dependencies:
     ```bash
-    npm install --legacy-peer-deps
+    npm install
     ```
 3.  Create `.env` file:
     ```bash
