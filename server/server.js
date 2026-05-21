@@ -36,7 +36,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    
+
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -49,11 +49,11 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Body Parser
+app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DOS attacks
 
-app.use(express.json({ limit: '10kb' })); 
 
-
-app.use(mongoSanitize());
+app.use(mongoSanitize());// Data Sanitization against NoSQL Query Injection
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -63,7 +63,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-
+// health check
 app.get('/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is healthy' });
 });
@@ -72,12 +72,12 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 
-
+// Catch-all route (404)
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: 'API Route not found' });
 });
 
-
+// error handler must be in last
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001;
@@ -89,6 +89,6 @@ const server = app.listen(PORT, () => {
 
 process.on('unhandledRejection', (err, promise) => {
   console.error(`Unhandled Rejection Error: ${err.message}`);
-  
+
   server.close(() => process.exit(1));
 });
