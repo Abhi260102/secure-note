@@ -26,6 +26,10 @@ const AddNote = ({ onSuccess, setToast }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [title, content]);
 
+  const getWordCount = (text) => {
+    return text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+  };
+
   const validateField = (name, value) => {
     let errorMsg = '';
     if (name === 'title') {
@@ -37,6 +41,8 @@ const AddNote = ({ onSuccess, setToast }) => {
     } else if (name === 'content') {
       if (!value.trim()) {
         errorMsg = 'Content is required';
+      } else if (getWordCount(value) > 1000) {
+        errorMsg = 'Content cannot exceed 1000 words';
       }
     }
 
@@ -151,8 +157,20 @@ const AddNote = ({ onSuccess, setToast }) => {
             </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
-                <Lock className="w-3.5 h-3.5 text-primary-500" /> End-to-End Encrypted
+              <div className="flex items-center gap-3">
+                <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5 text-primary-500" /> End-to-End Encrypted
+                </div>
+                <span
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full select-none ${getWordCount(content) > 1000
+                    ? 'bg-rose-100 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400'
+                    : getWordCount(content) > 850
+                      ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400'
+                      : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
+                    }`}
+                >
+                  {getWordCount(content)}/1000 words
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
