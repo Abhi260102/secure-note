@@ -40,11 +40,14 @@ secure-notes-app/
 │   ├── config/
 │   │   └── db.js                           # Mongoose Connection setup
 │   ├── controllers/
-│   │   ├── auth.controller.js              # Register, Login, Refresh, Logout Controllers
-│   │   └── notes.controller.js             # Notes CRUD, Paginated listing + Title filters
+│   │   ├── auth.controller.js              # Registers, Logins, Refreshes, and Logouts (Parses params)
+│   │   └── notes.controller.js             # Parses params for Notes CRUD, Paginated listings
+│   ├── helpers/
+│   │   ├── response.helper.js              # Standardizes success/error response payloads
+│   │   └── token.helper.js                 # JWT Generation and Verification wrappers
 │   ├── middleware/
 │   │   ├── auth.middleware.js              # JWT Validation and Expiry identification
-│   │   ├── error.middleware.js             # Global Error handler and Mongoose status maps
+│   │   ├── error.middleware.js             # Global Error handler utilizing standard response helper
 │   │   └── validators.js                   # Request validation schemas (express-validator)
 │   ├── models/
 │   │   ├── user.model.js                   # User Schema with pre-save hashing & validation
@@ -52,6 +55,9 @@ secure-notes-app/
 │   ├── routes/
 │   │   ├── auth.routes.js                  # Authentication router Mounts
 │   │   └── notes.routes.js                 # Notes CRUD router Mounts
+│   ├── services/
+│   │   ├── auth.service.js                 # User auth CRUD and token rotation service logic
+│   │   └── notes.service.js                # Notes database query and verification service logic
 │   ├── .env.example                        # Template for backend env variables
 │   ├── package.json
 │   └── server.js                           # Entry point configuring Helmet, CORS, and Sanitizers
