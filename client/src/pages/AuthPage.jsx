@@ -117,7 +117,7 @@ const AuthPage = () => {
             message: 'Password reset link generated! Check server logs.',
             type: 'success',
           });
-          setResetLinkMock(dataResponse.resetUrl);
+          setResetLinkMock(dataResponse.data?.resetUrl || dataResponse.resetUrl);
         }
       } catch (err) {
         setToast({
