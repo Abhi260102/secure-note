@@ -1,4 +1,5 @@
 const { body, validationResult } = require('express-validator');
+const CryptoJS = require('crypto-js');
 
 
 const handleValidationErrors = (req, res, next) => {
@@ -50,7 +51,22 @@ const validateNote = [
     .withMessage('Note title is required')
     .isLength({ max: 100 })
     .withMessage('Title cannot exceed 100 characters'),
-  body('content').notEmpty().withMessage('Note content is required'),
+  body('content')
+    .notEmpty()
+    .withMessage('Note content is required')
+    .custom((value) => {
+      try {
+        const secret = process.env.AES_SECRET || 'supersecretkeyshouldbechangeinproduction123';
+        const bytes = CryptoJS.AES.decrypt(value, secret);
+        const originalText = bytes.toString(CryptoJS.enc.Utf8);
+        if (!originalText) {
+          throw new Error('Invalid encrypted note content');
+        }
+        return true;
+      } catch (err) {
+        throw new Error('Invalid encrypted note content');
+      }
+    }),
   handleValidationErrors,
 ];
 
